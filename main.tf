@@ -131,7 +131,7 @@ resource "aws_instance" "frontend_instance" {
 # Instances EC2 pour le back-end
 resource "aws_instance" "backend" {
   count         = 2
-  ami           = "ami-0c55b159cbfafe1f0" # AMI Ubuntu 20.04 LTS
+  ami           = var.ami_id
   instance_type = "t2.micro"
   key_name      = aws_key_pair.deployer_key.key_name
   security_groups = [aws_security_group.backend_sg.name]
@@ -143,8 +143,8 @@ resource "aws_instance" "backend" {
               sudo systemctl start docker
               sudo systemctl enable docker
               aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${aws_ecr_repository.hello_world.repository_url}
-              docker pull ${aws_ecr_repository.hello_world.repository_url}:${var.image_tag}
-              docker run -d -p 80:8080 ${aws_ecr_repository.hello_world.repository_url}:${var.image_tag}
+              docker pull ${aws_ecr_repository.hello_world.repository_url}:latest
+              docker run -d -p 80:8080 ${aws_ecr_repository.hello_world.repository_url}:latest
               EOF
 
   tags = {

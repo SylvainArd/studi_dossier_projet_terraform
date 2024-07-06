@@ -22,8 +22,3 @@ variable "db_password" {
   description = "The password for the RDS instance"
   type        = string
 }
-
-variable "image_tag" {
-  description = "The Docker image tag"
-  type        = string
-}
