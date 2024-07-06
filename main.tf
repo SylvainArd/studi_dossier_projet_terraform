@@ -170,8 +170,8 @@ resource "aws_instance" "backend" {
 
   user_data = <<-EOF
               #!/bin/bash
-              sudo apt update -y
-              sudo apt install -y docker.io
+              sudo yum update -y
+              sudo yum install -y docker
               sudo systemctl start docker
               sudo systemctl enable docker
               EOF
