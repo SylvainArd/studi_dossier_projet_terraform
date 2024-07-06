@@ -160,16 +160,18 @@ resource "aws_instance" "frontend_instance" {
 
 # Instances EC2 pour le back-end
 resource "aws_instance" "backend" {
-  count         = 2
-  ami           = var.ami_id
-  instance_type = "t2.micro"
-  key_name      = aws_key_pair.deployer_key.key_name
-  security_groups = [aws_security_group.backend_sg.name]
+  count                  = 2
+  ami                    = var.ami_id
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.deployer_key.key_name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
+  security_groups        = [aws_security_group.backend_sg.name]
+  associate_public_ip_address = true
 
   user_data = <<-EOF
               #!/bin/bash
-              sudo yum update -y
-              sudo yum install -y docker
+              sudo apt update -y
+              sudo apt install -y docker.io
               sudo systemctl start docker
               sudo systemctl enable docker
               EOF
@@ -178,6 +180,7 @@ resource "aws_instance" "backend" {
     Name = "backend-instance-${count.index}"
   }
 }
+
 
 output "backend_instance_ips" {
   description = "The public IPs of the backend instances"
