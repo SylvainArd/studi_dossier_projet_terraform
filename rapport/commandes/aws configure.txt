@@ -1,0 +1,27 @@
+
+ChatGPT
+Pour trouver votre AWS Access Key ID, vous devez suivre ces étapes :
+
+Connectez-vous à la console de gestion AWS :
+
+Rendez-vous sur AWS Management Console.
+Connectez-vous avec vos identifiants AWS.
+Accédez à IAM (Identity and Access Management) :
+
+Dans la console de gestion, trouvez le service IAM. Vous pouvez le chercher dans la barre de recherche ou le trouver dans la section "Security, Identity, & Compliance".
+Naviguez vers "Users" :
+
+Dans le panneau de navigation de gauche, cliquez sur "Users" (Utilisateurs).
+Sélectionnez votre utilisateur :
+
+Cliquez sur le nom de l'utilisateur pour lequel vous souhaitez obtenir l'Access Key ID.
+Accédez aux informations de sécurité :
+
+Allez dans l'onglet "Security credentials" (Informations de sécurité).
+Gérez les clés d'accès :
+
+Si vous avez déjà des clés d'accès créées, vous les verrez dans la section "Access keys". L'Access Key ID sera affiché ici.
+Si vous n'avez pas encore de clés d'accès, vous pouvez en créer une en cliquant sur "Create access key". Assurez-vous de bien télécharger ou copier la nouvelle clé d'accès et la clé secrète car vous ne pourrez plus voir la clé secrète une fois la fenêtre fermée.
+Remarque importante :
+Sécurité : Manipulez toujours vos clés d'accès avec précaution. Ne les partagez jamais publiquement et évitez de les exposer dans des fichiers de code ou des dépôts publics. Utilisez AWS IAM roles et les bonnes pratiques de sécurité pour protéger vos ressources.
+Si vous avez besoin d'une aide plus visuelle, vous pouvez consulter la documentation officielle d'AWS ou suivre des tutoriels vidéo sur le sujet.
