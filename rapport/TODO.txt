@@ -1,3 +1,0 @@
-décrire ajout utilisateur admin sur AWS
-décrire installation AWS Cli et Terraform
-https://docs.centreon.com/fr/docs/installation/installation-of-a-central-server/using-packages/ >> machines centreon debian 12 la construire manuellement et ne pas oublier de la détruire et mettre les captures d'écran dans le rapport
