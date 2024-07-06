@@ -63,6 +63,57 @@ resource "aws_security_group" "backend_sg" {
   }
 }
 
+# Rôle IAM pour les instances EC2
+resource "aws_iam_role" "ec2_role" {
+  name = "ec2-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# Attache la politique ECR à ce rôle
+resource "aws_iam_role_policy_attachment" "ec2_role_policy" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
+# Profil d'instance IAM pour associer le rôle IAM aux instances EC2
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "ec2-instance-profile"
+  role = aws_iam_role.ec2_role.name
+}
+
+# Groupe de sécurité pour l'instance RDS
+resource "aws_security_group" "rds_sg" {
+  name        = "rds-sg"
+  description = "Allow MySQL traffic"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 # Paire de clés SSH
 resource "aws_key_pair" "deployer_key" {
   key_name   = var.key_name
@@ -117,8 +168,8 @@ resource "aws_instance" "backend" {
 
   user_data = <<-EOF
               #!/bin/bash
-              sudo apt update -y
-              sudo apt install -y docker.io
+              sudo yum update -y
+              sudo yum install -y docker
               sudo systemctl start docker
               sudo systemctl enable docker
               EOF
