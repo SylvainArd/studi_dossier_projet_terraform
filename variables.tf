@@ -1,15 +1,15 @@
 variable "vpc_id" {
-  description = "The ID of the VPC"
+  description = "The VPC ID where resources will be created"
   type        = string
 }
 
-variable "ecr_registry" {
-  description = "The ECR registry URL"
+variable "key_name" {
+  description = "The name of the SSH key pair"
   type        = string
 }
 
 variable "ami_id" {
-  description = "The ID of the AMI"
+  description = "The AMI ID for the frontend instances"
   type        = string
 }
 
@@ -21,15 +21,9 @@ variable "db_username" {
 variable "db_password" {
   description = "The password for the RDS instance"
   type        = string
-  sensitive   = true
 }
 
-variable "key_name" {
-  description = "The name of the SSH key pair"
-  type        = string
-}
-
-variable "public_key" {
-  description = "The public key content"
+variable "image_tag" {
+  description = "The Docker image tag"
   type        = string
 }

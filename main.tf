@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1" # Remplacez par votre région AWS
+  region = "us-east-1"
 }
 
 # Crée le repository ECR 
@@ -142,9 +142,9 @@ resource "aws_instance" "backend" {
               sudo apt install docker.io -y
               sudo systemctl start docker
               sudo systemctl enable docker
-              aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${var.ecr_registry}
-              docker pull ${var.ecr_registry}/hello-world:${var.image_tag}
-              docker run -d -p 80:8080 ${var.ecr_registry}/hello-world:${var.image_tag}
+              aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${aws_ecr_repository.hello_world.repository_url}
+              docker pull ${aws_ecr_repository.hello_world.repository_url}:${var.image_tag}
+              docker run -d -p 80:8080 ${aws_ecr_repository.hello_world.repository_url}:${var.image_tag}
               EOF
 
   tags = {
