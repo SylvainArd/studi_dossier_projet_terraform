@@ -273,15 +273,3 @@ resource "aws_backup_selection" "rds_backup_selection" {
     aws_db_instance.default.arn
   ]
 }
-
-output "frontend_instance_ips" {
-  value = aws_instance.frontend_instance[*].public_ip
-}
-
-output "backend_instance_ips" {
-  value = aws_instance.backend[*].public_ip
-}
-
-output "ecr_repository_url" {
-  value = aws_ecr_repository.hello_world.repository_url
-}
