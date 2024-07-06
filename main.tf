@@ -63,27 +63,6 @@ resource "aws_security_group" "backend_sg" {
   }
 }
 
-# Groupe de sécurité pour l'instance RDS
-resource "aws_security_group" "rds_sg" {
-  name        = "rds-sg"
-  description = "Allow MySQL traffic"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 # Paire de clés SSH
 resource "aws_key_pair" "deployer_key" {
   key_name   = var.key_name
@@ -139,17 +118,24 @@ resource "aws_instance" "backend" {
   user_data = <<-EOF
               #!/bin/bash
               sudo apt update -y
-              sudo apt install docker.io -y
+              sudo apt install -y docker.io
               sudo systemctl start docker
               sudo systemctl enable docker
-              aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${aws_ecr_repository.hello_world.repository_url}
-              docker pull ${aws_ecr_repository.hello_world.repository_url}:latest
-              docker run -d -p 80:8080 ${aws_ecr_repository.hello_world.repository_url}:latest
               EOF
 
   tags = {
     Name = "backend-instance-${count.index}"
   }
+}
+
+output "backend_instance_ips" {
+  description = "The public IPs of the backend instances"
+  value       = aws_instance.backend[*].public_ip
+}
+
+output "ecr_repository_url" {
+  description = "The URL of the ECR repository"
+  value       = aws_ecr_repository.hello_world.repository_url
 }
 
 # Load Balancer pour le front-end
@@ -174,30 +160,6 @@ resource "aws_elb" "frontend_elb" {
   }
 
   instances = aws_instance.frontend_instance[*].id
-}
-
-# Load Balancer pour le back-end
-resource "aws_elb" "backend_elb" {
-  name               = "backend-elb"
-  availability_zones = ["us-east-1d"] 
-  security_groups    = [aws_security_group.backend_sg.id]
-
-  listener {
-    instance_port     = 80
-    instance_protocol = "HTTP"
-    lb_port           = 80
-    lb_protocol       = "HTTP"
-  }
-
-  health_check {
-    target              = "HTTP:80/"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-
-  instances = aws_instance.backend[*].id
 }
 
 # Instance RDS
