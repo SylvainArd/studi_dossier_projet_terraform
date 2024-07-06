@@ -37,8 +37,9 @@ resource "aws_security_group" "frontend_sg" {
 
 # Groupe de sécurité pour le back-end
 resource "aws_security_group" "backend_sg" {
-  name_prefix = "backend-sg"
+  name        = "backend-sg"
   description = "Security group for backend instances"
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 22
@@ -132,6 +133,7 @@ resource "aws_instance" "backend" {
   count         = 2
   ami           = "ami-0c55b159cbfafe1f0" # AMI Ubuntu 20.04 LTS
   instance_type = "t2.micro"
+  key_name      = aws_key_pair.deployer_key.key_name
   security_groups = [aws_security_group.backend_sg.name]
 
   user_data = <<-EOF
@@ -146,20 +148,9 @@ resource "aws_instance" "backend" {
               EOF
 
   tags = {
-    Name = "backend"
+    Name = "backend-instance-${count.index}"
   }
 }
-
-output "instance_ips" {
-  value = aws_instance.backend[*].public_ip
-}
-
-output "ecr_repository_url" {
-  value = aws_ecr_repository.hello_world.repository_url
-}
-
-
-
 
 # Load Balancer pour le front-end
 resource "aws_elb" "frontend_elb" {
@@ -206,7 +197,7 @@ resource "aws_elb" "backend_elb" {
     unhealthy_threshold = 2
   }
 
-  instances = aws_instance.backend_instance[*].id
+  instances = aws_instance.backend[*].id
 }
 
 # Instance RDS
@@ -283,3 +274,14 @@ resource "aws_backup_selection" "rds_backup_selection" {
   ]
 }
 
+output "frontend_instance_ips" {
+  value = aws_instance.frontend_instance[*].public_ip
+}
+
+output "backend_instance_ips" {
+  value = aws_instance.backend[*].public_ip
+}
+
+output "ecr_repository_url" {
+  value = aws_ecr_repository.hello_world.repository_url
+}
