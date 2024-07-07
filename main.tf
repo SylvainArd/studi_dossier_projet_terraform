@@ -216,6 +216,30 @@ resource "aws_elb" "frontend_elb" {
   instances = aws_instance.frontend_instance[*].id
 }
 
+# Load Balancer pour le back-end
+resource "aws_elb" "backend_elb" {
+  name               = "backend-elb"
+  availability_zones = ["us-east-1d"] 
+  security_groups    = [aws_security_group.backend_sg.id]
+
+  listener {
+    instance_port     = 80
+    instance_protocol = "HTTP"
+    lb_port           = 80
+    lb_protocol       = "HTTP"
+  }
+
+  health_check {
+    target              = "HTTP:80/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+
+  instances = aws_instance.backend_instance[*].id
+}
+
 # Instance RDS
 resource "aws_db_instance" "default" {
   allocated_storage    = 5
