@@ -237,7 +237,7 @@ resource "aws_elb" "backend_elb" {
     unhealthy_threshold = 2
   }
 
-  instances = aws_instance.backend_instance[*].id
+  instances = aws_instance.backend[*].id
 }
 
 # Instance RDS
